@@ -83,3 +83,8 @@ select, input { font: inherit; color: var(--text); background: #fff; border: 1px
   .f.wide { grid-column: 1 / -1; }
   .vals { grid-template-columns: 1fr; }
 }
+
+/* Embedded mode (?embed=1): no own title band, no outer scroll */
+.embed .page-hero { display: none; }
+.embed body, .embed html { overflow: hidden; }
+.embed main { padding-top: 16px; }

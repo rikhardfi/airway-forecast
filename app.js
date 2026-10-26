@@ -5,6 +5,16 @@ import { ZONES, presets } from "./presets.js";
 import { makeT } from "./i18n.js";
 
 const $ = (id) => document.getElementById(id);
+
+// Embedded on hengitystutkimus.fi: the host page supplies the title, and the
+// iframe is sized to the content, so report the height whenever it changes.
+const EMBED = new URLSearchParams(location.search).has("embed");
+if (EMBED) {
+  document.documentElement.classList.add("embed");
+  const post = () => parent.postMessage({ airwayForecastHeight: document.documentElement.scrollHeight }, "*");
+  new ResizeObserver(post).observe(document.body);
+  addEventListener("load", post);
+}
 const t = makeT();
 const store = {
   get(k) { try { return localStorage.getItem(`af.${k}`); } catch { return null; } },
