@@ -59,6 +59,8 @@ select, input { font: inherit; color: var(--text); background: #fff; border: 1px
 .chart .dl { fill: #1f2a44; font-size: 12px; }
 .chart .you { stroke: var(--navy); stroke-width: 3; }
 .chart .yl { fill: var(--navy); font-size: 12px; font-weight: 700; }
+.chart .narrow .ax, .chart .narrow .dl, .chart .narrow .yl { font-size: 14px; }
+.chart .narrow .axt, .chart .narrow .row { font-size: 15px; }
 .lead2 { margin: 0 0 10px; }
 .legend { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; font-size: .9rem; }
 .legend li { display: flex; align-items: center; gap: 8px; }
@@ -88,3 +90,9 @@ select, input { font: inherit; color: var(--text); background: #fff; border: 1px
 .embed .page-hero { display: none; }
 .embed body, .embed html { overflow: hidden; }
 .embed main { padding-top: 16px; }
+/* On a phone the host page drops its own margins, so the cards run edge to edge */
+@media (max-width: 600px) {
+  .embed main.wrap { padding: 8px 0 0; }
+  .embed .card { border-left: 0; border-right: 0; border-radius: 0; padding: 14px 10px; margin-bottom: 10px; }
+  .embed .foot { padding-left: 10px; padding-right: 10px; }
+}

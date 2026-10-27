@@ -159,14 +159,18 @@ function render() {
 // The KIHU handout figure: ventilation by training zone for men and women, with
 // the drying limit in the forecast air and in room air.
 const ZONE_COLOURS = { easy: "#00860f", threshold: "#ff9933", high: "#e00000" };
+// On a phone the 760-wide figure would shrink its labels to ~5 px, so it is
+// drawn narrower there (the CSS enlarges its text) and redrawn on rotation.
+const NARROW = matchMedia("(max-width: 600px)");
 function drawZones(lim, room, air, when) {
-  const W = 760, H = 300, pad = { l: 78, r: 16, t: 20, b: 60 };
+  const narrow = NARROW.matches;
+  const W = narrow ? 420 : 760, H = 300, pad = narrow ? { l: 62, r: 14, t: 20, b: 60 } : { l: 78, r: 16, t: 20, b: 60 };
   const x0 = 40, x1 = 230;
   const x = (v) => pad.l + ((Math.min(Math.max(v, x0), x1) - x0) / (x1 - x0)) * (W - pad.l - pad.r);
   const rows = [["men", t("men"), 92], ["women", t("women"), 200]];
   const top = pad.t, bottom = H - pad.b + 6;
   let g = "";
-  for (let v = 40; v <= 220; v += 20) g += `<line x1="${x(v)}" x2="${x(v)}" y1="${pad.t}" y2="${H - pad.b + 14}" class="grid"/><text x="${x(v)}" y="${H - pad.b + 30}" class="ax" text-anchor="middle">${v}</text>`;
+  for (let v = 40; v <= 220; v += narrow ? 40 : 20) g += `<line x1="${x(v)}" x2="${x(v)}" y1="${pad.t}" y2="${H - pad.b + 14}" class="grid"/><text x="${x(v)}" y="${H - pad.b + 30}" class="ax" text-anchor="middle">${v}</text>`;
   g += `<text x="${(pad.l + W - pad.r) / 2}" y="${H - pad.b + 50}" class="axt" text-anchor="middle">${t("axis")}</text>`;
   const band = (b, cls) => `<rect x="${x(b.lo)}" y="${top}" width="${Math.max(3, x(b.hi) - x(b.lo))}" height="${bottom - top}" class="${cls}"/>`;
   g += band(room, "room") + band(lim, "now");
@@ -180,7 +184,7 @@ function drawZones(lim, room, air, when) {
     }
     if (sex === state.sex) g += `<line x1="${x(ve())}" x2="${x(ve())}" y1="${y - 20}" y2="${y + 20}" class="you"/><text x="${x(ve())}" y="${y + 33}" class="yl" text-anchor="middle">${t("you")} ${fmt(ve())}</text>`;
   }
-  $("chart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t("chartTitle")}">${g}</svg>`;
+  $("chart").innerHTML = `<svg viewBox="0 0 ${W} ${H}"${narrow ? ' class="narrow"' : ""} role="img" aria-label="${t("chartTitle")}">${g}</svg>`;
   $("chartWhen").textContent = t("chartWhen", { site: state.site.name, when });
   const sw = (cls, style = "") => `<span class="sw ${cls}" style="${style}"></span>`;
   $("legend").innerHTML = [
@@ -208,6 +212,7 @@ async function load(site) {
 
 // ---- events ------------------------------------------------------------------
 function wire() {
+  NARROW.addEventListener("change", render);
   $("site").addEventListener("change", (e) => load(state.sites.find((s) => s.id === e.target.value)));
   $("days").addEventListener("click", (e) => { const b = e.target.closest("[data-day]"); if (b) { state.day = Number(b.dataset.day); render(); } });
   $("start").addEventListener("change", (e) => { state.start = Number(e.target.value); render(); });
